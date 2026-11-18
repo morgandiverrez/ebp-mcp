@@ -14,7 +14,7 @@ import { correspondTexte } from "../commun/texte.js";
 import { exigerFamilleOutil, type ContexteService, type DepsService, type ResultatService } from "../commun/types.js";
 import { identiteScanGescom } from "./identite.js";
 import { resultatServiceDepuisScan, resultatServiceFiche } from "./resultats.js";
-import { sourceDepuisSkipTake, sourceDepuisSkipTakeAvecSource, type ElementAvecSource } from "./sources.js";
+import { sourceDepuisSkipTake, sourceDepuisSkipTakeAvecSource, TAILLE_PAGE_RESOLUTION, type ElementAvecSource } from "./sources.js";
 
 /**
  * `rechercher_articles` (07 §6, D-T11-4/D-T11-6). Seuls `skip`/`take` partent au serveur (`/items`,
@@ -112,7 +112,7 @@ export async function ficheArticle(
     const sourceListe = sourceDepuisSkipTake<Article>(
       "hubbix-gescom:/items",
       "referentiel",
-      2,
+      TAILLE_PAGE_RESOLUTION,
       (article) => article.id,
       async (skip, take, b) => {
         appelsSource += 1;

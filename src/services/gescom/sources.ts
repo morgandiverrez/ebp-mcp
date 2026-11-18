@@ -1,6 +1,14 @@
 import type { Budget } from "../../http/budget.js";
 import type { PageSource, PositionSource, SourcePaginee } from "../../pagination/source-page.js";
 
+/**
+ * Taille de page des scans de résolution par `code`/`numero` (D-T11-3). Le `2` de D-T11-3 est la
+ * limite de correspondances (`resoudreUnique`), pas la taille de page : avec des pages de 2 et le
+ * budget de 30 tentatives HTTP par outil (07, paramètres d’exécution), aucun référentiel de plus de ~58 éléments ne
+ * pouvait être résolu (`RESOLUTION_INCOMPLETE`). Même taille que les listes.
+ */
+export const TAILLE_PAGE_RESOLUTION = 100;
+
 /** Page skip/take normalisée telle que renvoyée par les fonctions de liste de `hubbix-gescom` (02 §3). */
 export interface PageSkipTake<E> {
   readonly resultats: readonly E[];

@@ -254,6 +254,19 @@ describe("services/gescom/documents.ts — detail_document (D-T11-7)", () => {
     ).rejects.toMatchObject({ erreur: { code: "RESOLUTION_INCOMPLETE" } });
   });
 
+  it("120 documents : scan par numéro en pages de 100, dans le budget de 30 ⇒ NOT_FOUND (régression pages de 2)", async () => {
+    const tous = Array.from({ length: 120 }, (_, i) => docListe(`d${i}`, { number: `F-${i}` }));
+    const d = depsService([
+      { status: 200, corps: { elements: tous.slice(0, 100), take: 100, skip: 0, total: 120 } },
+      { status: 200, corps: { elements: tous.slice(100), take: 100, skip: 100, total: 120 } },
+    ]);
+    await expect(detailDocument(d, ctxGescom(), { numero: "INTROUVABLE" })).rejects.toMatchObject({
+      erreur: { code: "NOT_FOUND" },
+    });
+    expect(d.transport.appels).toHaveLength(2);
+    expect(new URL(d.transport.appels[0]!.url).searchParams.get("take")).toBe("100");
+  });
+
   it("`avec_lignes: false` ⇒ `lignes: null`, même appel unique", async () => {
     const d = depsService([{ status: 200, corps: detailFacture("d1", { lines: [{ id: "l1" }] }) }]);
     const resultat = await detailDocument(d, ctxGescom(), {

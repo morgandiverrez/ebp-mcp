@@ -68,6 +68,19 @@ describe("services/gescom/articles.ts — fiche_article par code (D-T11-3)", () 
     ).rejects.toMatchObject({ erreur: { code: "RESOLUTION_INCOMPLETE" } });
   });
 
+  it("référentiel de 120 articles : scan complet en pages de 100, dans le budget de 30 ⇒ NOT_FOUND (régression pages de 2)", async () => {
+    const tous = Array.from({ length: 120 }, (_, i) => article(`a${i}`, `ART${i}`));
+    const d = depsService([
+      { status: 200, corps: { elements: tous.slice(0, 100), take: 100, skip: 0, total: 120 } },
+      { status: 200, corps: { elements: tous.slice(100), take: 100, skip: 100, total: 120 } },
+    ]);
+    await expect(ficheArticle(d, ctxGescom(), { code: "INTROUVABLE" })).rejects.toMatchObject({
+      erreur: { code: "NOT_FOUND" },
+    });
+    expect(d.transport.appels).toHaveLength(2);
+    expect(new URL(d.transport.appels[0]!.url).searchParams.get("take")).toBe("100");
+  });
+
   it("type `inconnu` sur l'élément trouvé ⇒ UNSUPPORTED_CAPABILITY, aucune requête de détail supplémentaire", async () => {
     const page = { elements: [article("a1", "ART1", "BundleItem" as never)], take: 2, skip: 0, total: 1 };
     const d = depsService([{ status: 200, corps: page }]);

@@ -24,7 +24,7 @@ import {
   TYPE_SOURCE_VERS_ENTREE,
 } from "./mapping.js";
 import { resultatServiceDepuisScan, resultatServiceFiche } from "./resultats.js";
-import { sourceDepuisSkipTake, sourceDepuisSkipTakeAvecSource, type ElementAvecSource } from "./sources.js";
+import { sourceDepuisSkipTake, sourceDepuisSkipTakeAvecSource, TAILLE_PAGE_RESOLUTION, type ElementAvecSource } from "./sources.js";
 
 /** Vue interne d'un candidat document pendant le scan ; jamais rendue telle quelle (champs `_` strippés par `projeter`). */
 interface CandidatDocument extends DocumentVente {
@@ -236,7 +236,7 @@ export async function detailDocument(
     const sourceListe = sourceDepuisSkipTake<DocumentVente>(
       "hubbix-gescom:/sale-documents",
       "transactionnel",
-      2,
+      TAILLE_PAGE_RESOLUTION,
       (document) => document.id,
       async (skip, take, b) => {
         appelsSource += 1;
